@@ -6,16 +6,16 @@ import morgan from 'morgan'
 
 const app = express()
 const logger = morgan('dev')
-const PORT = 4000
 
 app.set('view engine', 'pug')
 app.set('views', process.cwd() + '/src/views')
 app.use(logger)
+
+app.disable('x-powered-by')
+app.use(express.urlencoded({ extended: true }))
+
 app.use('/', globalRouter)
-app.use('/video', videoRouter)
+app.use('/videos', videoRouter)
 app.use('/users', userRouter)
 
-const handleListening = () =>
-  console.log(`Server Listening on port http:localhost:${PORT}`)
-
-app.listen(PORT, handleListening)
+export default app

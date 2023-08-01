@@ -3,4 +3,7 @@ extends base.pug
 
 
 block content 
-    h1 watch
+    div 
+        p=video.description
+        small=video.createdat
+    a(href=`${video.video_pk}/edit`) Edit Video &rarr;
