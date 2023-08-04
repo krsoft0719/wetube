@@ -9,6 +9,7 @@ import {
 } from '../controllers/videoController'
 const videoRouter = express.Router()
 
+videoRouter.route('/:id/delete').get(deleteVideo)
 videoRouter.route('/upload').get(getUpload).post(postUpload)
 videoRouter.get('/:id', watch)
 videoRouter.route('/:id/edit').get(getEdit).post(postEdit)

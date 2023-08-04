@@ -1,0 +1,21 @@
+extends base
+
+block content 
+    if(errorMessage) 
+            p=errorMessage
+    form(method="POST")
+        p name
+        input(type="text" name = "name" required placeholder="name ")
+        input(type="email" name = "email" required placeholder="xxxx@email.com") 
+        input(type="text" name = "username" required placeholder="username") 
+        input(type="password" name = "password" required placeholder="password") 
+        input(type="password" name = "passwordCheck" required placeholder="confirm password") 
+        input(type="text" name = "location",required placeholder="location")    
+        input(type="submit", value = "Join")
+        
+
+    hr
+    div 
+        span Already have an account? 
+        a(href="/login") Log in now &rarr;
+        

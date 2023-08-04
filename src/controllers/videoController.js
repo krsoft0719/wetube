@@ -1,13 +1,16 @@
 let svc = require('../service/video')
+// 해쉬태그 만드는 함수
+const formatHashtags = (hashtags) =>
+  hashtags.split(',').map((word) => (word.startsWith('#') ? word : `#${word}`))
 
+//메인 페이지
 export const home = async (req, res) => {
   const videos = await svc.getVideo()
   return res.render('home', { pageTitle: 'Home', videos })
 }
-
+// 선택한 비디오 보는 페이지
 export const watch = async (req, res) => {
   const { id } = req.params
-  console.log('id ', id)
   const [video] = await svc.getVideoDetail(id)
   if (video) {
     return res.render('watch', {
@@ -17,18 +20,18 @@ export const watch = async (req, res) => {
   }
   return res.render('404', { pageTitle: 'Video not found' })
 }
-
+// 비디오 등록 페이지
 export const getUpload = (req, res) => {
   const { id } = req.params
   return res.render('upload', {
     pageTitle: `Upload Video  `,
   })
 }
-
+// 비디오 등록
 export const postUpload = (req, res) => {
   try {
     const { title, description, hash } = req.body
-    const hashtags = hash.split(',').map((word) => `#${word}`)
+    const hashtags = formatHashtags(hash)
 
     svc.postVideo(title, description, hashtags)
   } catch (error) {
@@ -40,7 +43,7 @@ export const postUpload = (req, res) => {
 
   return res.redirect('/')
 }
-
+// 비디오 편집 페이지
 export const getEdit = async (req, res) => {
   const { id } = req.params
   const [video] = await svc.getVideoDetail(id)
@@ -52,6 +55,7 @@ export const getEdit = async (req, res) => {
     video,
   })
 }
+// 비디오 편집
 export const postEdit = async (req, res) => {
   const { id } = req.params
   const [video] = await svc.getVideoDetail(id)
@@ -60,12 +64,27 @@ export const postEdit = async (req, res) => {
     return res.render('404', { pageTitle: 'Video not found' })
   }
   const { title, description, hashtags } = req.body
-  await svc.updateVideo(title, description, hashtags, id)
+
+  let hashs = formatHashtags(hashtags)
+
+  await svc.updateVideo(title, description, hashs, id)
   return res.redirect(`/videos/${id}`)
 }
 
-export const search = (req, res) => res.send('Search')
+export const search = async (req, res) => {
+  const { keyword } = req.query
+
+  if (keyword) {
+    let videos = ([][videos] = await svc.searchVideo(keyword))
+    return res.render('search', { pageTitle: 'Search', videos })
+  }
+  console.log('AAA')
+  return res.render('search', { pageTitle: 'Search' })
+}
 export const upload = (req, res) => res.send('Upload')
-export const deleteVideo = (req, res) => {
-  return res.send('Delete Video')
+export const deleteVideo = async (req, res) => {
+  const { id } = req.params
+  await svc.deleteVideo(id)
+
+  return res.redirect('/')
 }
