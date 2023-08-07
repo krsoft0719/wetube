@@ -39,6 +39,8 @@ export const getLogin = (req, res) =>
 
 export const postLogin = async (req, res) => {
   const { username, password } = req.body
+  let socialOnly = false
+
   const [user] = await svc.login(username)
   const pageTitle = 'Login'
   if (!user) {
@@ -62,21 +64,20 @@ export const postLogin = async (req, res) => {
 
   return res.redirect('/')
 }
-
+// 소셜로그인 시작
 export const startGithubLogin = (req, res) => {
   const baseUrl = 'https://github.com/login/oauth/authorize'
   const config = {
     client_id: process.env.GH_CLIENT_ID,
     allow_signup: false,
-    scope: `read:user user:email`,
+    scope: 'read:user user:email',
   }
   const params = new URLSearchParams(config).toString()
 
-  console.log('params : ', params)
   const finalUrl = `${baseUrl}?${params}`
   return res.redirect(finalUrl)
 }
-
+// 소셜 로그인 끝
 export const finishGithubLogin = async (req, res) => {
   const baseUrl = 'https://github.com/login/oauth/access_token'
 
@@ -87,18 +88,70 @@ export const finishGithubLogin = async (req, res) => {
   }
   const params = new URLSearchParams(config).toString()
   const finalUrl = `${baseUrl}?${params}`
-  const data = await fetch(finalUrl, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-    },
-  })
-  const json = await data.json()
-  console.log(json)
+  const tokenRequest = await (
+    await fetch(finalUrl, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+  ).json()
+
+  if ('access_token' in tokenRequest) {
+    const { access_token } = tokenRequest
+    const apiUrl = 'https://api.github.com'
+    const userData = await (
+      await fetch(`${apiUrl}/user`, {
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      })
+    ).json()
+    console.log('userData: ', userData)
+    const emailData = await (
+      await fetch(`${apiUrl}/user/emails`, {
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      })
+    ).json()
+    const emailObj = emailData.find(
+      (email) => email.primary === true && email.verified === true,
+    )
+    if (!emailObj) return res.redirect('/login')
+
+    const [existingUser] = await svc.findExistEmail(emailObj.email)
+    if (existingUser) {
+      req.session.loggedIn = true
+      req.session.user = existingUser
+      return res.redirect('/')
+    } else {
+      //create an account
+      // 해당 이메일 없으니 계정 생성해줘야함
+      const newUser = {
+        we_name: userData.name,
+        we_username: userData.login,
+        we_email: emailObj.email,
+        we_password: '',
+        we_avatar_url: userData.avatar_url,
+        we_scoialOnly: true,
+        we_location: userData.location,
+      }
+      await svc.join(newUser)
+      req.session.loggedIn = true
+      req.session.user = newUser
+
+      return res.redirect('/')
+    }
+  }
 }
 
 export const edit = (req, res) => res.send('Edit User')
 export const remove = (req, res) => res.send('Remove User')
-export const logout = (req, res) => res.send('Log out')
+export const logout = (req, res) => {
+  req.session = null // 세션 삭제
+  res.clearCookie('connect.sid')
+  return res.redirect('/')
+}
 export const see = (req, res) => res.send('See User')
 export const getJoin = (req, res) => res.render('Join', { pageTitle: 'Join' })
