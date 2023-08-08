@@ -1,9 +1,8 @@
 import fetch from 'node-fetch'
 import bcrypt from 'bcrypt'
-
 let svc = require('../service/user')
-
 import 'dotenv/config'
+
 //회원가입
 export const postJoin = async (req, res) => {
   const pageTitle = 'Join'
@@ -35,7 +34,7 @@ export const postJoin = async (req, res) => {
 
 //로그인페이지
 export const getLogin = (req, res) =>
-  res.render('login', { pageTitle: 'Log in' })
+  res.render('users/login', { pageTitle: 'Log in' })
 
 export const postLogin = async (req, res) => {
   const { username, password } = req.body
@@ -60,6 +59,7 @@ export const postLogin = async (req, res) => {
   // 세션 초기화 하는 부분
   // 세션을 수정할 때만 db에 저장해줌
   req.session.loggedIn = true
+  console.log('그냥 로그인 유저 ', user)
   req.session.user = user
 
   return res.redirect('/')
@@ -120,24 +120,24 @@ export const finishGithubLogin = async (req, res) => {
     )
     if (!emailObj) return res.redirect('/login')
 
-    const [existingUser] = await svc.findExistEmail(emailObj.email)
+    const [existingUser] = await svc.findExistScoial(emailObj.email)
     if (existingUser) {
+      // 계정 있을 때
       req.session.loggedIn = true
       req.session.user = existingUser
       return res.redirect('/')
     } else {
-      //create an account
-      // 해당 이메일 없으니 계정 생성해줘야함
+      // 계정 없을 때 바로 회원가입 후 로그인
       const newUser = {
         we_name: userData.name,
         we_username: userData.login,
         we_email: emailObj.email,
         we_password: '',
         we_avatar_url: userData.avatar_url,
-        we_scoialOnly: true,
         we_location: userData.location,
+        we_social: true,
       }
-      await svc.join(newUser)
+      await svc.join_social(newUser)
       req.session.loggedIn = true
       req.session.user = newUser
 
@@ -145,13 +145,75 @@ export const finishGithubLogin = async (req, res) => {
     }
   }
 }
+// 프로필 수정 페이지 조회
+export const getEdit = (req, res) => {
+  return res.render('users/edit-profile', {
+    pageTitle: 'Edit Profile',
+    user: req.session.user,
+  })
+}
+// 프로필 수정
+export const postEdit = async (req, res) => {
+  const {
+    session: {
+      user: { we_email, we_username, user_pk },
+    },
+    body: { name, email, username, location },
+  } = req
+  await svc.updateProfile(user_pk, name, email, username, location)
+  req.session.user = {
+    ...req.session.user,
+    name,
+    email,
+    username,
+    location,
+  }
+  return res.redirect('/users/edit-profile')
+}
 
-export const edit = (req, res) => res.send('Edit User')
 export const remove = (req, res) => res.send('Remove User')
 export const logout = (req, res) => {
   req.session = null // 세션 삭제
   res.clearCookie('connect.sid')
   return res.redirect('/')
 }
+
+export const getChangePassword = (req, res) => {
+  if (req.session.user.we_social === true) {
+    return res.redirect('/')
+  }
+  return res.render('users/change-password', { pageTitle: 'Change Passwword' })
+}
+export const postgetChangePassword = async (req, res) => {
+  // send notification
+  const {
+    session: {
+      user: { user_pk, we_password },
+    },
+    body: { oldpw, newpw, pwconfirm },
+  } = req
+  // 기존 비번과 일치 확인
+  const ok = await bcrypt.compare(oldpw, we_password)
+  if (!ok) {
+    return res.status(400).render('users/change-password', {
+      pageTitle: 'Change Password',
+      errorMessage: 'The current password is incorrect',
+    })
+  }
+  // 비밀번호 체크 일치 확인
+  if (pwconfirm !== newpw) {
+    return res.status(400).render('users/change-password', {
+      pageTitle: 'Change Passwword',
+      errorMessage: 'The password confirm does not match',
+    })
+  }
+
+  // 비밀번호 바꿈
+  await svc.updatePassword(user_pk, newpw)
+  console.log('!!! ', req.session.user.we_password)
+  req.session.user.we_password = newpw
+  return res.redirect('/users/logout')
+}
+
 export const see = (req, res) => res.send('See User')
 export const getJoin = (req, res) => res.render('Join', { pageTitle: 'Join' })
