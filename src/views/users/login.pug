@@ -4,8 +4,9 @@ block content
     if(errorMessage) 
             p=errorMessage
     form(method="POST")
-        p name
-        input(type="text" name = "username" required placeholder="username") 
+        label ID
+        input(type="text" name = "userId" required placeholder="Id") 
+        label PW
         input(type="password" name = "password" required placeholder="password") 
         input(type="submit", value = "Log In")
         br

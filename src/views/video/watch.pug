@@ -3,9 +3,14 @@ extends ../base.pug
 
 
 block content 
+    video(src="/"+video.file_url, controls)
     div 
+        small Uploaded by 
+        a(href=`/users/${video.we_user_pk}`) #{video.we_name}
         p=video.description
         small=video.createdat
-    a(href=`${video.video_pk}/edit`) Edit Video &rarr;
-    br 
-    a(href=`${video.video_pk}/delete`) Delete Video &rarr;
+        br
+    if (upLoadUser === visitor)
+        a(href=`${video.video_pk}/edit`) Edit Video &rarr;
+        br 
+        a(href=`${video.video_pk}/delete`) Delete Video &rarr;

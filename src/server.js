@@ -5,6 +5,7 @@ import rootRouter from './routers/rootRouter'
 import morgan from 'morgan'
 import session from 'express-session'
 import { localsMiddleware } from './middlewares'
+
 const pg = require('pg')
 const pgSession = require('connect-pg-simple')(session)
 import 'dotenv/config'
@@ -23,6 +24,7 @@ app.set('views', process.cwd() + '/src/views')
 app.use(logger)
 
 app.disable('x-powered-by')
+app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(
@@ -39,9 +41,10 @@ app.use(
 )
 
 app.use(localsMiddleware)
+app.use('/uploads', express.static('uploads'))
 
 app.use('/', rootRouter)
-app.use('/videos', videoRouter)
 app.use('/users', userRouter)
+app.use('/videos', videoRouter)
 
 export default app

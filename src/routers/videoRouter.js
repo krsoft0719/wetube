@@ -1,27 +1,27 @@
 import express from 'express'
 import {
   watch,
-  getUpload,
   getEdit,
   postEdit,
+  getUpload,
   postUpload,
   deleteVideo,
 } from '../controllers/videoController'
-import { publicOnlyMiddeware, protectorMiddleware } from '../middlewares'
+import { protectorMiddleware, videoUpload } from '../middlewares'
 
 const videoRouter = express.Router()
 
 videoRouter.route('/:id/delete').all(protectorMiddleware).get(deleteVideo)
-videoRouter.get('/:id', watch)
 videoRouter
   .route('/upload')
   .all(protectorMiddleware)
   .get(getUpload)
-  .post(postUpload)
+  .post(videoUpload.single('video'), postUpload)
 videoRouter
   .route('/:id/edit')
   .all(protectorMiddleware)
   .get(getEdit)
-  .post(postEdit)
+  .post(videoUpload.single('video'), postEdit)
 
+videoRouter.get('/:id', watch)
 export default videoRouter

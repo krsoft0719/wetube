@@ -10,34 +10,50 @@ export const home = async (req, res) => {
 }
 // 선택한 비디오 보는 페이지
 export const watch = async (req, res) => {
+  console.log('선택한  비디오 보는 페이지')
   const { id } = req.params
+  const {
+    user: { user_pk },
+  } = req.session
+
   const [video] = await svc.getVideoDetail(id)
+
   if (video) {
-    return res.render('watch', {
+    return res.render('video/watch', {
       pageTitle: 'Watching',
       video,
+      upLoadUser: video.we_user_pk,
+      visitor: user_pk,
     })
   }
-  return res.render('404', { pageTitle: 'Video not found' })
+  return res.render('404', {
+    pageTitle: 'Video not found',
+  })
 }
 // 비디오 등록 페이지
 export const getUpload = (req, res) => {
+  console.log('비디오 등록 페이지')
   const { id } = req.params
-  return res.render('upload', {
+  return res.render('video/upload', {
     pageTitle: `Upload Video  `,
   })
 }
 // 비디오 등록
-export const postUpload = (req, res) => {
+export const postUpload = async (req, res) => {
+  console.log('비디오 등록')
+  const { path } = req.file
+  const { user } = req.session
+  const { title, description, hash } = req.body
   try {
-    const { title, description, hash } = req.body
     const hashtags = formatHashtags(hash)
 
-    svc.postVideo(title, description, hashtags)
+    await svc.postVideo(title, description, hashtags, path, user.user_pk)
+    return res.redirect('/')
   } catch (error) {
-    return res.render('upload', {
+    console.log('error ', error)
+    return res.render('video/upload', {
       pageTitle: 'upload Video',
-      errorMessage: error._message,
+      errorMessage: error,
     })
   }
 
@@ -46,11 +62,15 @@ export const postUpload = (req, res) => {
 // 비디오 편집 페이지
 export const getEdit = async (req, res) => {
   const { id } = req.params
+  const { user } = req.session
   const [video] = await svc.getVideoDetail(id)
   if (!video) {
     return res.render('404', { pageTitle: 'Video not Found' })
   }
-  return res.render('edit', {
+  if (video.we_user_pk !== user.user_pk) {
+    return res.status(403).redirect('/')
+  }
+  return res.render('users/edit', {
     pageTitle: `Editing : ${video.title}`,
     video,
   })
@@ -76,12 +96,15 @@ export const search = async (req, res) => {
 
   if (keyword) {
     let videos = ([][videos] = await svc.searchVideo(keyword))
-    return res.render('search', { pageTitle: 'Search', videos })
+    return res.render('video/search', { pageTitle: 'Search', videos })
   }
-  console.log('AAA')
-  return res.render('search', { pageTitle: 'Search' })
+  return res.render('video/search', { pageTitle: 'Search' })
 }
-export const upload = (req, res) => res.send('Upload')
+// 업로드
+export const upload = (req, res) => {
+  console.log('업로드 ')
+}
+// 비디오 삭제
 export const deleteVideo = async (req, res) => {
   const { id } = req.params
   await svc.deleteVideo(id)
