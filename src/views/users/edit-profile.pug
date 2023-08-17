@@ -2,19 +2,20 @@ extends ../base.pug
 
 
 block content 
-    img(src="/"+loggedInUser.we_avatar_url, width="100", height="100")
-    form(method = "POST", enctype = "multipart/form-data")
-        label(for="avatar") Avatar
-        input(type="file", id="avatar", name="avatar", accept="image/*")
-        label Name
-        input(placeholder="Name",type="text" name="name" required value=loggedInUser.we_name)
-        if !loggedInUser.we_social
-            label Email
-            input(placeholder="Email",type="email" name="email" required value=loggedInUser.we_email)
-        label Location
-        input(placeholder="Location",type="text" name="location" required value=loggedInUser.we_location)
-        input(type="submit", value='Update Profile')
-        hr
-        if !loggedInUser.we_social
-            a(href="change-password") Change Password &rarr;
+    img(src=loggedInUser.we_avatar_url, width="100", height="100")
+    div.user_area
+        form(method = "POST", enctype = "multipart/form-data").form
+            label(for="avatar") Avatar
+            input(type="file", id="avatar", name="avatar", accept="image/*")
+            label Name
+            input(placeholder="Name",type="text" name="name" required value=loggedInUser.we_name)
+            if !loggedInUser.we_social
+                label Email
+                input(placeholder="Email",type="email" name="email" required value=loggedInUser.we_email)
+            label Location
+            input(placeholder="Location",type="text" name="location" required value=loggedInUser.we_location)
+            input(type="submit", value='Update Profile').active_btn
+            hr
+            if !loggedInUser.we_social
+                a(href="change-password") Change Password &rarr;
     

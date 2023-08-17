@@ -1,0 +1,16 @@
+extends base.pug
+include mixins/video
+
+block content
+    form(method="GET").search__form
+        div.search_area
+            input(placeholder="Search by title",name="keyword", type="text" autocomplete="off")
+            button
+                i.fas.fa-search
+
+    div.video-grid
+        if(videos)
+            each video in videos 
+                +video(video)
+            else
+                span.empty__message No videos found

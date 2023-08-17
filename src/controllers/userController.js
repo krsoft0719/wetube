@@ -244,6 +244,7 @@ export const see = async (req, res) => {
   return res.render('users/profile', {
     pageTitle: `${user.we_name} Profile`,
     videos: videoList,
+    user,
   })
 }
 export const getJoin = (req, res) =>

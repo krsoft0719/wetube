@@ -1,0 +1,75 @@
+body {
+  height: 100vh;
+}
+
+.user_area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 100px;
+  margin: 0 auto;
+  width: 40%;
+  background-color: #121113;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-radius: 10px;
+
+  .form {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 90%;
+
+    input {
+      all: unset;
+      border: 0.1px solid rgba(255, 255, 255, 0.2);
+      background-color: #010001;
+      font-size: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      &::placeholder {
+        color: white;
+      }
+    }
+    .active_btn {
+      margin-top: 30px;
+      cursor: pointer;
+      text-align: center;
+      &:hover {
+        background-color: whitesmoke;
+        color: black;
+        font-weight: 900;
+      }
+    }
+    .line {
+      margin-top: 50px;
+      border: 0.1px solid rgba(255, 255, 255, 0.2);
+    }
+    a {
+      &:hover {
+        font-weight: bolder;
+      }
+    }
+  }
+  .social_login {
+    margin-top: 60px;
+    text-align: center;
+    border: 1px solid white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    &:hover {
+      background-color: green;
+      font-weight: bolder;
+    }
+  }
+}
+.account_area {
+  margin-top: 50px;
+  a {
+    &:hover {
+      font-weight: bolder;
+    }
+  }
+}

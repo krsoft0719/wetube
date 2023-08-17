@@ -6,11 +6,11 @@ const formatHashtags = (hashtags) =>
 //메인 페이지
 export const home = async (req, res) => {
   const videos = await svc.getVideo()
+  console.log('!!! ', videos)
   return res.render('home', { pageTitle: 'Home', videos })
 }
 // 선택한 비디오 보는 페이지
 export const watch = async (req, res) => {
-  console.log('선택한  비디오 보는 페이지')
   const { id } = req.params
   const {
     user: { user_pk },
@@ -32,7 +32,6 @@ export const watch = async (req, res) => {
 }
 // 비디오 등록 페이지
 export const getUpload = (req, res) => {
-  console.log('비디오 등록 페이지')
   const { id } = req.params
   return res.render('video/upload', {
     pageTitle: `Upload Video  `,
@@ -40,7 +39,6 @@ export const getUpload = (req, res) => {
 }
 // 비디오 등록
 export const postUpload = async (req, res) => {
-  console.log('비디오 등록')
   const { path } = req.file
   const { user } = req.session
   const { title, description, hash } = req.body
@@ -56,8 +54,6 @@ export const postUpload = async (req, res) => {
       errorMessage: error,
     })
   }
-
-  return res.redirect('/')
 }
 // 비디오 편집 페이지
 export const getEdit = async (req, res) => {
@@ -90,15 +86,15 @@ export const postEdit = async (req, res) => {
   await svc.updateVideo(title, description, hashs, id)
   return res.redirect(`/videos/${id}`)
 }
-
+// 검색
 export const search = async (req, res) => {
   const { keyword } = req.query
 
   if (keyword) {
     let videos = ([][videos] = await svc.searchVideo(keyword))
-    return res.render('video/search', { pageTitle: 'Search', videos })
+    return res.render('search', { pageTitle: 'Search', videos })
   }
-  return res.render('video/search', { pageTitle: 'Search' })
+  return res.render('search', { pageTitle: 'Search' })
 }
 // 업로드
 export const upload = (req, res) => {

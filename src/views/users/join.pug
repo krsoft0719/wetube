@@ -3,22 +3,23 @@ extends ../base
 block content 
     if(errorMessage) 
             p=errorMessage
-    form(method="POST")
-        label Name
-        input(type="text" name = "name" required placeholder="name ")
-        label ID
-        input(type="text" name = "userId" required placeholder="ID") 
-        label PASSWORD
-        input(type="password" name = "password" required placeholder="password") 
-        label PASSWORD CHECK
-        input(type="password" name = "passwordCheck" required placeholder="confirm password") 
-        label EMAIL 
-        input(type="email" name = "email" required placeholder="xxxx@email.com") 
-        label LOCATION
-        input(type="text" name = "location",required placeholder="location")    
-        input(type="submit", value = "Join")
-    hr
-    div 
+    div.user_area            
+        form(method="POST").form
+            input(type="text" name = "name" required placeholder="Name" )
+            input(type="text" name = "userId" required placeholder="Id" ) 
+            input(type="password" name = "password" required placeholder="Password" ) 
+            input(type="password" name = "passwordCheck" required placeholder="Confirm Password" ) 
+            input(type="email" name = "email" required placeholder="Email" ) 
+            input(type="text" name = "location",required placeholder="Location" )    
+            input(type="submit", value = "Join").active_btn
+            div.line
+            div.social_login
+                        a(href="/users/github/start") 
+                            i.fab.fa-github
+                            |   Continue with Github &rarr;
+   
+    div.account_area 
         span Already have an account? 
         a(href="/login") Log in now &rarr;
+
         

@@ -1,7 +1,9 @@
 let pgdb = require('../repo-pg/config')
 // 비디오 조회
 async function getVideo() {
-  let queryTemp = `SELECT * FROM video ORDER BY createdat DESC`
+  let queryTemp = `SELECT ua.we_name, v.*  FROM video v LEFT JOIN 
+	                  user_account ua ON  
+	                  v.we_user_pk = ua.user_pk::varchar`
 
   const { rows } = await pgdb.querys(queryTemp)
   return rows

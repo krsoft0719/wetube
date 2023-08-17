@@ -3,10 +3,14 @@ include ../mixins/video
 
 
 block content 
-    each video in videos 
-        +video(video)
-        hr
-    else 
-        li Plaease upload videos! 
+    div.profile__data
+        img(src="/"+user.we_avatar_url).avatar
+        he=user.we_name
+    div.video-grid
+        each video in videos 
+            +video(video)
+           
+        else 
+            li Plaease upload videos! 
 
     

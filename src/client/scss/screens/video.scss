@@ -1,0 +1,84 @@
+.video_main {
+  width: 100%;
+  height: 60%;
+  margin: 0 auto;
+  position: relative;
+  video {
+    height: 100%;
+    width: 100%;
+  }
+  .timeline {
+    width: 100%;
+    input {
+      width: 100%;
+    }
+  }
+  .videoTotalControls {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-bottom: 1rem;
+    background-color: #282628;
+    .timeline {
+      input {
+        background: linear-gradient(
+          to right,
+          #ff0202 0%,
+          #ff0202 50%,
+          #ff0202 50%,
+          #ff0202 100%
+        );
+        border-radius: 8px;
+        outline: none;
+        transition: background 450ms ease-in;
+        accent-color: #ff0202;
+      }
+    }
+    .videoControls {
+      display: flex;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+
+      .leftControls {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        width: 70%;
+        button {
+          all: unset;
+          margin-left: 2rem;
+          margin-right: 1rem;
+          i {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+          }
+        }
+        .volumeArea {
+          display: flex;
+          input {
+            display: none;
+          }
+        }
+      }
+      .rightControls {
+        width: 30%;
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-around;
+        button {
+          width: 100%;
+          height: 100%;
+          all: unset;
+          i {
+            font-size: larger;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}
